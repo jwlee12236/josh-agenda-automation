@@ -1,0 +1,31 @@
+name: Daily Agenda
+
+on:
+  schedule:
+    # 7:00 AM ET = 12:00 UTC (EST) / 11:00 UTC (EDT)
+    # Run at both so it's right year-round; the script uses LOCAL_TZ
+    - cron: "0 11 * * 1-5"   # Mon–Fri 11:00 UTC (EDT / summer)
+    - cron: "0 12 * * 1-5"   # Mon–Fri 12:00 UTC (EST / winter)
+  workflow_dispatch:          # allow manual runs
+
+jobs:
+  send-daily-agenda:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run daily agenda script
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          TOKEN_JSON_B64: ${{ secrets.TOKEN_JSON_B64 }}
+        run: python daily_agenda.py

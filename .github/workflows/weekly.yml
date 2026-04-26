@@ -1,0 +1,30 @@
+name: Weekly Agenda
+
+on:
+  schedule:
+    # 8:00 PM ET Sunday = 01:00 UTC Monday (EDT) / 00:00 UTC Monday (EST)
+    - cron: "0 1 * * 1"   # Monday 01:00 UTC (EDT / summer)
+    - cron: "0 0 * * 1"   # Monday 00:00 UTC (EST / winter)
+  workflow_dispatch:       # allow manual runs
+
+jobs:
+  send-weekly-agenda:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run weekly agenda script
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          TOKEN_JSON_B64: ${{ secrets.TOKEN_JSON_B64 }}
+        run: python weekly_agenda.py
