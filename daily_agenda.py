@@ -124,7 +124,7 @@ def format_threads(threads: list[dict]) -> str:
 # ---------------------------------------------------------------------------
 
 def generate_agenda(events_text: str, threads_text: str, date_str: str) -> str:
-    client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
+    client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"], timeout=60.0)
 
     user_message = f"""\
 Today is {date_str}.

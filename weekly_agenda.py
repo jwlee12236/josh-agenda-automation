@@ -131,7 +131,7 @@ def format_threads(threads: list[dict]) -> str:
 # ---------------------------------------------------------------------------
 
 def generate_weekly_agenda(events_text: str, threads_text: str, week_label: str) -> str:
-    client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
+    client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"], timeout=60.0)
 
     user_message = f"""\
 It is Sunday evening. The upcoming week is {week_label}.
