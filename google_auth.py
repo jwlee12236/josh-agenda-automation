@@ -9,16 +9,12 @@ import base64
 import json
 import os
 
-import httplib2
 from google.auth.transport.requests import Request
-from google.auth.transport.httplib2 import AuthorizedHttp
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 
 from config import CREDENTIALS_PATH, GOOGLE_SCOPES, TOKEN_PATH
-
-GOOGLE_API_TIMEOUT = 30  # seconds
 
 
 def get_credentials() -> Credentials:
@@ -60,15 +56,9 @@ def _save_token(creds: Credentials) -> None:
         f.write(creds.to_json())
 
 
-def _authorized_http(creds: Credentials) -> AuthorizedHttp:
-    return AuthorizedHttp(creds, http=httplib2.Http(timeout=GOOGLE_API_TIMEOUT))
-
-
 def get_calendar_service():
-    creds = get_credentials()
-    return build("calendar", "v3", http=_authorized_http(creds))
+    return build("calendar", "v3", credentials=get_credentials())
 
 
 def get_gmail_service():
-    creds = get_credentials()
-    return build("gmail", "v1", http=_authorized_http(creds))
+    return build("gmail", "v1", credentials=get_credentials())
