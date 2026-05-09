@@ -7,10 +7,10 @@
 ---
 
 ## ULTIMATE GOAL
-$500k annual total compensation while maintaining strong work-life balance and prioritizing family life — as soon as possible. Every week's plan should be evaluated against this north star.
+$500k annual total compensation in a remote role while maintaining strong work-life balance and prioritizing family life — as soon as possible. Every week's plan should be evaluated against this north star.
 
 ## CURRENT CONTEXT (Updated May 2026)
-- Actively job searching. Target: $130k+ base, Series A–C AI/fintech startup, PM-adjacent or PM title.
+- Actively job searching. Target: $130k+ base, Series A–C AI/fintech startup, PM-adjacent or PM title. Strong preference for remote roles.
 - Cytora: current placeholder role. Prelim interview May 11th is highest-priority near-term event.
 - Roadster Capital VC residency: 8-week commitment, no stipend, ~10 async hrs/week. Pure credential + network play.
 - North star decision point: PM at Series B/C AI company OR VC associate with carry (~end of 2026).
