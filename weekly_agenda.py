@@ -17,6 +17,7 @@ from config import (
     CLAUDE_MODEL,
     EMAIL_RECIPIENT,
     GMAIL_MAX_THREADS,
+    GOALS_PATH,
     LOCAL_TZ,
     SYSTEM_PROMPT,
     WEEKLY_LOOKAHEAD_DAYS,
@@ -127,11 +128,26 @@ def format_threads(threads: list[dict]) -> str:
 
 
 # ---------------------------------------------------------------------------
+# Goals loader
+# ---------------------------------------------------------------------------
+
+def load_goals() -> str:
+    try:
+        with open(GOALS_PATH, "r") as f:
+            return f.read().strip()
+    except FileNotFoundError:
+        return ""
+
+
+# ---------------------------------------------------------------------------
 # Claude
 # ---------------------------------------------------------------------------
 
 def generate_weekly_agenda(events_text: str, threads_text: str, week_label: str) -> str:
-    client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"], timeout=60.0)
+    client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"], timeout=90.0)
+
+    goals_text = load_goals()
+    goals_section = f"\n=== JOSH'S GOALS & LEARNING CONTEXT ===\n{goals_text}\n" if goals_text else ""
 
     user_message = f"""\
 It is Sunday evening. The upcoming week is {week_label}.
@@ -141,17 +157,39 @@ It is Sunday evening. The upcoming week is {week_label}.
 
 === RECENT EMAIL THREADS (things that may carry into the week) ===
 {threads_text}
+{goals_section}
+Please write Josh's weekly preview email. Use the structure below exactly.
 
-Please write my weekly preview email. Structure:
-1. One-sentence week overview.
-2. Day-by-day highlights (skip empty days).
-3. Email / open-loop items to address this week.
-4. A short "This week's priorities" section (3 bullets max).
+**SECTION 1 — WEEK AT A GLANCE**
+One sentence summarising the overall feel of the week (busy, light, high-stakes, etc.).
+
+**SECTION 2 — CALENDAR HIGHLIGHTS**
+Day-by-day highlights. Skip days with no events. Flag any events that conflict with a scheduled learning block (e.g. "Note: Monday morning block may be impacted by X").
+
+**SECTION 3 — LEARNING WEEK PLAN**
+One entry per morning block. For each block, suggest a *specific* task or topic — not a generic description of the pillar. Ground suggestions in Josh's current curriculum stage, recent momentum, and any relevant calendar context.
+
+Format each entry as:
+  Mon (PM Craft — study): [specific suggestion]
+  Tue (Technical — study): [specific suggestion]
+  Wed (PM Craft — build/write): [specific artifact to produce]
+  Thu (Technical — build): [specific thing to build or extend]
+  Fri (Financial modelling): [specific section or skill to work on]
+  Weekend (AI/Industry landscape): [topic for the curiosity slot — note the rotation if determinable]
+
+**SECTION 4 — INBOX / OPEN LOOPS**
+Email threads or known open items to address this week.
+
+**SECTION 5 — NON-NEGOTIABLES REMINDER**
+List the 4 non-negotiables as a short checklist. Keep it brief — just a reminder, not a lecture.
+
+**SECTION 6 — THIS WEEK'S TOP 3 PRIORITIES**
+Three bullets. Ordered by impact toward the ultimate goal ($500k comp + family-first). Be direct and specific — not "keep job searching", but what specifically to do.
 """
 
     response = client.messages.create(
         model=CLAUDE_MODEL,
-        max_tokens=1500,
+        max_tokens=2000,
         system=SYSTEM_PROMPT,
         messages=[{"role": "user", "content": user_message}],
     )

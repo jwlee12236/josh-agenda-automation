@@ -46,3 +46,4 @@ GOOGLE_SCOPES = [
 # --- Paths ---
 TOKEN_PATH = os.path.join(os.path.dirname(__file__), "token.json")
 CREDENTIALS_PATH = os.path.join(os.path.dirname(__file__), "credentials.json")
+GOALS_PATH = os.path.join(os.path.dirname(__file__), "goals.md")
