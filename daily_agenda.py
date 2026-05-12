@@ -18,6 +18,7 @@ from config import (
     DAILY_LOOKAHEAD_DAYS,
     EMAIL_RECIPIENT,
     GMAIL_MAX_THREADS,
+    GOALS_PATH,
     LOCAL_TZ,
     SYSTEM_PROMPT,
 )
@@ -120,11 +121,26 @@ def format_threads(threads: list[dict]) -> str:
 
 
 # ---------------------------------------------------------------------------
+# Goals loader
+# ---------------------------------------------------------------------------
+
+def load_goals() -> str:
+    try:
+        with open(GOALS_PATH, "r") as f:
+            return f.read().strip()
+    except FileNotFoundError:
+        return ""
+
+
+# ---------------------------------------------------------------------------
 # Claude
 # ---------------------------------------------------------------------------
 
 def generate_agenda(events_text: str, threads_text: str, date_str: str) -> str:
     client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"], timeout=60.0)
+
+    goals_text = load_goals()
+    goals_section = f"\n=== JOSH'S GOALS & LEARNING CONTEXT ===\n{goals_text}\n" if goals_text else ""
 
     user_message = f"""\
 Today is {date_str}.
@@ -134,10 +150,23 @@ Today is {date_str}.
 
 === RECENT EMAIL THREADS ===
 {threads_text}
+{goals_section}
+Please write Josh's daily agenda email. Use this structure:
 
-Please write my daily agenda email. Lead with a one-sentence day summary, \
-then a calendar section, then an email section highlighting anything that \
-needs attention or follow-up. End with a short "Today's focus" line.
+**DAY SUMMARY**
+One sentence on the overall feel of today.
+
+**CALENDAR**
+Today's events. Flag if any conflict with the scheduled morning learning block for this day of the week.
+
+**INBOX**
+Email threads needing attention or follow-up today.
+
+**TODAY'S LEARNING BLOCK**
+Based on the day of the week and Josh's goals context, state which pillar is scheduled and suggest one specific task or topic for the session. If it's a "build" day, name a concrete output. Keep this to 2–3 lines.
+
+**TODAY'S FOCUS**
+One sharp sentence — the single most important thing to accomplish today given the calendar, inbox, job search, and learning goals.
 """
 
     response = client.messages.create(
