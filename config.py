@@ -1,7 +1,7 @@
 import os
 
 # --- Recipients ---
-EMAIL_RECIPIENT = "jwlee12@gmail.com"  # change if needed
+EMAIL_RECIPIENT = "jwlee12236@gmail.com"
 
 # --- Timezone ---
 LOCAL_TZ = "America/New_York"
