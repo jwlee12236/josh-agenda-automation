@@ -1,0 +1,25 @@
+name: Keepalive
+
+on:
+  schedule:
+    # 1st of every month at 00:00 UTC — keeps repo "active" so GitHub
+    # doesn't auto-disable the daily/weekly scheduled workflows after 60 days
+    - cron: "0 0 1 * *"
+  workflow_dispatch:
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Empty commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git commit --allow-empty -m "chore: keepalive commit"
+          git push
